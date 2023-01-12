@@ -159,6 +159,11 @@ Signature is not required for this part
 - [x] getAccountLendRecord
 - [x] getLendingMarketData
 - [x] getMarginFillsTradeData
+- [x] getLendConfig
+- [x] getLendMarkets
+- [x] getLendOrder
+- [x] getSingleLendOrder
+- [x] getLendRecords
 
 #### Rest/Others
 - [x] getTimestamp

@@ -464,3 +464,207 @@ exports.getMarginFillsTradeData = async function getMarginFillsTradeData(currenc
     currency,
   });
 };
+
+/**
+ * @name getLendConfig
+ * @description Query Lending Configuration. This endpoint requires the "General" permission.
+ * @param {string} currency - [Optional] Currency
+ * @return {Object} { code, success, data }
+ */
+exports.getLendConfig = async function getLendConfig(currency) {
+  /*
+{
+    "success": true,
+    "code": "200",
+    "msg": "success",
+    "retry": false,
+    "data": {
+        "timestamp": 1669709409384,
+        "items": [
+            {
+                "currency": "BTC",
+                "lendMinSize": "0.001",
+                "lendMaxSize": "300",
+                "increment": "0.0001",
+                "minDailyIntRate": "0",
+                "maxDailyIntRate": "0.002",
+                "precisionDailyIntRate": "0.00001",
+                "terms": "7,14,28"
+            }
+        ]
+    }
+}
+  */
+  return await Http().GET('/api/v2/margin/lend/config', {
+    currency
+  });
+};
+
+/**
+ * @name getLendMarkets
+ * @description Query Lending Market List. This endpoint requires the "General" permission.
+ * @param {string} currency - [Optional] Currency
+ * @param {Int} term - [Optional] Currency
+ * @return {Object} { code, success, data }
+ */
+exports.getLendMarkets = async function getLendMarkets(currency,term) {
+  /*
+ {
+    "success": true,
+    "code": "200",
+    "msg": "success",
+    "retry": false,
+    "data": {
+        "timestamp": 1669709478401,
+        "items": [
+            {
+                "currency": "BTC",
+                "size": "300",
+                "dailyIntRate": "0.002",
+                "term": 7
+            }
+        ]
+    }
+}
+  */
+  return await Http().GET('/api/v2/margin/lend/market', {
+    currency,
+    term
+  });
+};
+
+/**
+ * @name getLendOrder
+ * @description Lending Order Query (Paginated). This endpoint requires the "Trade" permission.
+ * @param {string} status - [Optional] Status
+ * @param {string} currency - [Optional] Currency
+ * @param {Object}
+ *   - {number} currentPage
+ *   - {number} pageSize
+ * @return {Object} { code, success, data }
+ */
+exports.getLendOrder = async function getLendOrder(status,currency, { currentPage, pageSize } = {}) {
+  /*
+  {
+    "success": true,
+    "code": "200",
+    "msg": "success",
+    "retry": false,
+    "data": {
+        "timestamp": 1669708513820,
+        "currentPage": 1,
+        "pageSize": 100,
+        "totalNum": 1,
+        "totalPage": 1,
+        "items": [
+            {
+                "orderId": "637c85a15403ae00016bd6df",
+                "currency": "USDT",
+                "size": "3000000",
+                "filledSize": "144",
+                "dailyIntRate": "0.002",
+                "term": 7,
+                "createdAt": 1669105056560,
+                "status": "ACTIVE"
+            }
+        ]
+    }
+}
+  */
+  return await Http().GET('/api/v2/margin/lend/orders', {
+    currency,
+    status,
+    currentPage,
+    pageSize,
+  });
+};
+
+/**
+ * @name getSingleLendOrder
+ * @description Query Single Lending Order . This endpoint requires the "Trade" permission.
+ * @param {string} orderId - [Optional] Currency
+ * @return {Object} { code, success, data }
+ */
+exports.getSingleLendOrder = async function getSingleLendOrder(orderId) {
+  /*
+{
+    "success": true,
+    "code": "200",
+    "msg": "success",
+    "retry": false,
+    "data": {
+        "orderId": "6385c0b3e0debdb6feb06e97",
+        "currency": "USDT",
+        "size": "11",
+        "filledSize": "0",
+        "dailyIntRate": "0.002",
+        "term": 7,
+        "createdAt": 1669710002360,
+        "status": "ACTIVE"
+    }
+}
+  */
+  return await Http().GET('/api/v2/margin/lend', {
+    orderId
+  });
+};
+
+/**
+ * @name getLendRecords
+ * @description Query Lending Records . This endpoint requires the "Trade" permission.
+ * @param {string} status - [Optional] Status
+ * @param {string} currency - [Optional] Currency
+ * @param {Object}
+ *   - {number} currentPage
+ *   - {number} pageSize
+ * @return {Object} { code, success, data }
+ */
+exports.getLendRecords = async function getLendRecords(status,currency, { currentPage, pageSize } = {}) {
+  /*
+{
+    "success": true,
+    "code": "200",
+    "msg": "success",
+    "retry": false,
+    "data": {
+        "timestamp": 1669711220219,
+        "currentPage": 1,
+        "pageSize": 10,
+        "totalNum": 39,
+        "totalPage": 4,
+        "items": [
+            {
+                "tradeId": "637c85a754f4d9000122f510",
+                "currency": "USDT",
+                "size": "11",
+                "repaidSize": "11",
+                "interest": "0.15400056",
+                "accruedInterest": "0",
+                "term": 7,
+                "maturityTime": 1669709863747,
+                "status": "CLEAR",
+                "note": ""
+            },
+            {
+                "tradeId": "6335ab03503ab80001485cb3",
+                "currency": "USDT",
+                "size": "1117",
+                "repaidSize": "1117",
+                "interest": "15.63799944",
+                "accruedInterest": "0",
+                "term": 7,
+                "maturityTime": 1665066311258,
+                "status": "CLEAR",
+                "note": ""
+            }
+        ]
+    }
+}
+  */
+  return await Http().GET('/api/v2/margin/lend/trade/orders', {
+    currency,
+    status,
+    currentPage,
+    pageSize,
+  });
+};
