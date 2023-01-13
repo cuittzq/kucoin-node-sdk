@@ -668,3 +668,313 @@ exports.getLendRecords = async function getLendRecords(status,currency, { curren
     pageSize,
   });
 };
+
+
+/**
+ * @name getIsolatedAccounts
+ * @description Query Isolate Accounts . This endpoint requires the "Trade" permission.
+ * @param {string} symbol - [Optional] symbol
+ * @param {string} quoteCurrency - [Optional] quoteCurrency
+ * @return {Object} { code, success, data }
+ */
+exports.getIsolatedAccounts = async function getIsolatedAccounts(symbol,quoteCurrency) {
+  /*
+{
+	"code": "200000",
+	"data": [
+		{
+			"totalAssetOfQuoteCurrency": "3.4939947",
+			"totalLiabilityOfQuoteCurrency": "0.00239066",
+			"timestamp": 1668062174000,
+			"assets": [
+				{
+					"symbol": "MANA-USDT",
+					"debtRatio": "0",
+					"status": "BORROW",
+					"baseAsset": {
+						"currency": "MANA",
+						"borrowEnabled": true,
+						"transferInEnabled": true,
+						"liability": "0",
+						"total": "0",
+						"available": "0",
+						"hold": "0",
+						"maxBorrowSize": "1000"
+					},
+					"quoteAsset": {
+						"currency": "USDT",
+						"borrowEnabled": true,
+						"transferInEnabled": true,
+						"liability": "0",
+						"total": "0",
+						"available": "0",
+						"hold": "0",
+						"maxBorrowSize": "50000"
+					}
+				}
+			]
+		}
+	]
+}
+  */
+  return await Http().GET('/api/v2/isolated/accounts', {
+    symbol,
+    quoteCurrency,
+  });
+};
+
+
+/**
+ * @name getMarginAccounts
+ * @description Query Margin Accounts . This endpoint requires the "Trade" permission.
+ * @param {string} quoteCurrency - [Optional] quoteCurrency
+ * @return {Object} { code, success, data }
+ */
+exports.getMarginAccounts = async function getMarginAccounts(quoteCurrency) {
+  /*
+{
+    "success": true,
+    "code": "200",
+    "msg": "success",
+    "retry": false,
+    "data": {
+        "totalLiabilityOfQuoteCurrency": "0.976",
+        "totalAssetOfQuoteCurrency": "1.00",
+        "debtRatio": "0.976",
+        "status": "LIQUIDATION",
+        "timestamp": 1669708513820,
+        "assets": [
+            {
+                "currency": "BTC",
+                "borrowEnabled": true,
+                "transferInEnabled": false,
+                "liability": "0.976",
+                "total": "1.00",
+                "available": "0.024",
+                "hold": "0",
+                "maxBorrowSize": "0"
+            }
+        ]
+    }
+}
+  */
+  return await Http().GET('/api/v2/margin/accounts', {
+    quoteCurrency,
+  });
+};
+
+
+/**
+ * @name getMarginTransferable
+ * @description Query Margin Transferable . This endpoint requires the "Trade" permission.
+ * @param {boolean} isIsolated - true:Isolated,false:Margin
+ * @param {string} symbol - [Optional] symbol
+ * @param {string} currency - [Optional] currency
+ * @return {Object} { code, success, data }
+ */
+exports.getMarginTransferable = async function getMarginTransferable(isIsolated, symbol, currency) {
+  /*
+{
+    "success": true,
+    "code": "200",
+    "msg": "success",
+    "retry": false,
+    "data": {
+      "balance": "100",
+      "available": "80",
+      "holds": "20",
+      "transferable": "20",
+      "timestamp": 1668062174000
+    }
+}
+  */
+  return await Http().GET('/api/v2/margin/transferable', {
+    isIsolated,
+    symbol,
+    currency
+  });
+};
+
+
+/**
+ * @name getMarginRiskLimits
+ * @description Query Margin Risk Limits . This endpoint requires the "General" permission.
+ * @param {boolean} isIsolated - true:Isolated,false:Margin
+ * @param {string} symbol - [Optional] symbol
+ * @param {string} currency - [Optional] currency
+ * @return {Object} { code, success, data }
+ */
+exports.getMarginRiskLimits = async function getMarginRiskLimits(isIsolated, symbol, currency) {
+  /*
+  {
+    "success": true,
+    "code": "200",
+    "msg": "success",
+    "retry": false,
+    "data": [
+        {
+            "timestamp": 1672733936758,
+            "currency": "USDT",
+            "borrowMaxAmount": "70000",
+            "buyMaxAmount": "71000",
+            "holdMaxAmount": "71001",
+            "precision": 8
+        },
+        {
+            "timestamp": 1672733936758,
+            "currency": "BTC",
+            "borrowMaxAmount": "46000",
+            "buyMaxAmount": "46500",
+            "holdMaxAmount": "46501",
+            "precision": 8
+        }
+    ]
+  }
+  */
+  return await Http().GET('/api/v2/margin/riskLimits', {
+    isIsolated,
+    symbol,
+    currency
+  });
+};
+
+
+/**
+ * @name postBorrowOrderV2
+ * @description Post Borrow Order Version 2. This endpoint requires the "Trade" permission.
+ * @param params
+ *   - {boolean} isIsolated - true:Isolated,false:Margin
+ *   - {string} symbol - symbol
+ *   - {string} currency - Currency to Borrow
+ *   - {string} timeInForce - timeInForce: FOK, IOC
+ *   - {number} size - Total size
+ *   - {number} maxRate - [Optional] The max interest rate. All interest rates are acceptable if this field is left empty.
+ *   - {string} term - [Optional] Term (Unit: Day). All terms are acceptable if this field is left empty. Please note to separate the terms via comma. For example, 7,14,28.
+ * @return {Object} { code, success, data }
+ */
+exports.postBorrowOrderV2 = async function postBorrowOrderV2(params = {}) {
+  /*
+{
+	"code": "200000",
+	"timestamp": 1668062174000,
+	"data": {
+		"orderId": "5da6dba0f943c0c81f5d5db5",
+        "size":"20.9"
+	}
+}
+  */
+  return await Http().POST('/api/v2/margin/borrow', { ...params });
+};
+
+
+/**
+ * @name repayAllV2
+ * @description One-Click Repayment. This endpoint requires the "Trade" permission..
+ * @param params
+ *   - {boolean} isIsolated - true:Isolated,false:Margin
+ *   - {string} symbol - symbol
+ *   - {string} currency - Currency to Borrow
+ *   - {number} size - Total size
+ *   - {string} sequence - Repayment strategy. RECENTLY_EXPIRE_FIRST: Time priority, namely to repay the loans of the nearest maturity time first, HIGHEST_RATE_FIRST: Rate Priority: Repay the loans of the highest interest rate first.
+ * @return {Object} { code, success, data }
+ */
+exports.repayAllV2 = async function repayAllV2(params = {}) {
+  /*
+{
+	"code": "200000",
+	"data": {
+		"tradeId":"5da6dba0f4234345c81f5d50f",
+		"timestamp": 1668062174000
+	}
+}
+  */
+  return await Http().POST('/api/v2/margin/repay/all', { ...params });
+};
+
+/**
+ * @name repaySingleV2
+ * @description One-Click Repayment. This endpoint requires the "Trade" permission..
+ * @param params
+ *   - {boolean} isIsolated - true:Isolated,false:Margin
+ *   - {string} symbol - symbol
+ *   - {string} currency - Currency to Borrow
+ *   - {number} size - Total size
+ *   - {string} tradeId - Trade ID.
+ * @return {Object} { code, success, data }
+ */
+exports.repaySingleV2 = async function repaySingleV2(params = {}) {
+  /*
+{
+	"code": "200000",
+	"data": {
+		"tradeId":"5da6dba0f4234345c81f5d50f",
+		"timestamp": 1668062174000
+	}
+}
+  */
+  return await Http().POST('/api/v2/margin/repay/single', { ...params });
+};
+
+
+/**
+ * @name getMarginRepayRecords
+ * @description Get Margin Repay Records. This endpoint requires the "Trade" permission..
+ * @param {string} isIsolated - true:Isolated,false:Margin
+ * @param {string} symbol - [Optional] symbol
+ * @param {string} currency - [Optional] Currency
+ * @param {string} status - [Optional] status
+ * @param {number} startTime - [Optional] startTime
+ * @param {number} endTime - [Optional] endTime
+ * @param {Object}
+ *   - {number} currentPage
+ *   - {number} pageSize
+ * @return {Object} { code, success, data }
+ */
+exports.getMarginRepayRecords = async function getMarginRepayRecords(isIsolated,
+                                                                     symbol,
+                                                                     currency,
+                                                                     status,
+                                                                     startTime,
+                                                                     endTime,
+                                                                     { currentPage, pageSize } = {}) {
+  /*
+  {
+    "success": true,
+    "code": "200",
+    "msg": "success",
+    "retry": false,
+    "data": {
+        "timestamp": 1669708513820,
+        "currentPage": 1,
+        "pageSize": 100,
+        "totalNum": 1,
+        "totalPage": 1,
+        "items": [
+            {
+                "tradeId": "5da6dba0f943c0c81f5d5db5",
+                "currency": "USDT",
+                "principal": "50000",
+                "interest": "50",
+                "repaidSize": "4000",
+                "maturityTime": 1668062174000,
+                "dailyIntRate": "0.0004",
+                "term": 28,
+                "status": "ACTIVE"
+            }
+        ]
+    }
+}
+  */
+  return await Http().GET('/api/v2/margin/repay', {
+      isIsolated,
+      symbol,
+      currency,
+      status,
+      startTime,
+      endTime,
+      currentPage,
+      pageSize,
+  });
+};
+
+

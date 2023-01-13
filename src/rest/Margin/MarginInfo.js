@@ -133,3 +133,45 @@ exports.getMarginPriceStrategy = async function getMarginPriceStrategy({ marginM
     */
   return await Http().GET('/api/v1/risk/limit/strategy', {marginModel});
 };
+
+
+/**
+ * @name postMarginOrderV2
+ * @description Post Margin Order. This endpoint requires the "Trade" permission.
+ * @param params https://docs.kucoin.cc/#place-a-margin-order
+ *   Parameters
+ *    - {boolean} isIsolated - true:Isolated,false:Margin
+ *    - {string} clientOid - Unique order id created by users to identify their orders, e.g. UUID.
+ *    - {string} side - buy or sell
+ *    - {string} symbol - a valid trading symbol code. e.g. ETH-BTC
+ *    - {string} type - [Optional] limit or market (default is limit)
+ *    - {string} remark - [Optional] remark for the order, length cannot exceed 100 utf8 characters
+ *    - {string} stp - [Optional] self trade prevention , CN, CO, CB or DC
+ *    - {boolean} autoBorrow - [Optional] Auto-borrow to place order. The system will first borrow you funds at the optimal interest rate and then place an order for you.
+ *   LIMIT ORDER PARAMETERS
+ *    - {string} price - price per base currency
+ *    - {string} size - amount of base currency to buy or sell
+ *    - {string} timeInForce - [Optional] GTC, GTT, IOC, or FOK (default is GTC).
+ *    - {long} cancelAfter - [Optional] cancel after n seconds, requires timeInForce to be GTT
+ *    - {boolean} postOnly - [Optional] Post only flag, invalid when timeInForce is IOC or FOK
+ *    - {boolean} hidden - [Optional] Order will not be displayed in the order book
+ *    - {boolean} iceberg - [Optional] Only aportion of the order is displayed in the order book
+ *    - {string} visibleSize - [Optional] The maximum visible size of an iceberg order
+ *   LIMIT ORDER PARAMETERS
+ *    - {string} size - [Optional] Desired amount in base currency
+ *    - {string} funds - [Optional] The desired amount of quote currency to use
+ * @return {Object} { code, success, data }
+ */
+exports.postMarginOrderV2 = async function postMarginOrderV2(params = {}) {
+  /*
+  {
+    "code": "200000",
+    "data": {
+      "orderId": "5bd6e9286d99522a52e458de",
+      "borrowSize":10.2,
+      "loanApplyId":"600656d9a33ac90009de4f6f"
+    }
+  }
+  */
+  return await Http().POST('/api/v2/margin/order', { ...params });
+};
